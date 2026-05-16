@@ -35,6 +35,12 @@ void uart_print_number(uint16_t num){
     }
 }
 
+void uart_print(const char *str) {
+    while (*str) {
+        uart_send(*str++);
+    }
+}
+
 void timer_init(void){
     OCR0A = 155;
     TCCR0A = (1 << WGM01);
@@ -73,6 +79,7 @@ int main(void){
     sei();
     DDRB |= (1 << PB5);
     PORTB &= ~(1 << PB5);  // explicitly off at startup
+    _delay_ms(1000);  // wait for serial connection to settle
     DDRD &= ~(1 << PD2);
     PORTD |= (1 << PD2);
 
@@ -84,11 +91,16 @@ int main(void){
                 state = 1;
                 _delay_ms(200);
             }   else if (state == 2 && react_time > 0) {
-                    uart_print_number(react_time * 10);  // *10 converts ticks to ms
-                    uart_send('m');
-                    uart_send('s');
-                    uart_send('\r');
-                    uart_send('\n');
+                    if (react_time * 10 < 100)
+                    {
+                        uart_print("Too fast, Cheating\r\n");
+                    }
+                    else{
+                        uart_print_number(react_time * 10);  // *10 converts ticks to ms
+                        uart_print("ms");
+                        uart_send('\r');
+                        uart_send('\n');
+                    }
                     react_time = 0;
                     PORTB &= ~(1 << PB5);
                     state = 0;

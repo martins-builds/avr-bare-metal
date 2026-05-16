@@ -1,0 +1,1 @@
+code checks your rection timeand displays it in milliseconds

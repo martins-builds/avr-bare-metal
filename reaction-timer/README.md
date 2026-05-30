@@ -1,32 +1,26 @@
-# AVR Reaction Timer
+# Reaction Timer
 
-Measures human reaction time in milliseconds using bare-metal C on an ATmega328P.
-No Arduino libraries used.
+Measures how fast you can press a button after an LED turns on.
+Built in bare-metal C — no Arduino libraries.
 
-## How it works
-1. Press the button to start
-2. Wait for the LED to turn on (random delay)
-3. Press the button as fast as you can
-4. Your reaction time appears in your terminal
+## How It Works
+Press the button to start. The LED turns on after a random delay.
+Press the button again as fast as you can — your reaction time prints
+over UART in milliseconds.
 
-## Cheat detection
-Presses under 100ms are flagged as "Too fast, Cheating"
+## Peripherals Used
+- **Timer0** — CTC mode, counts milliseconds via ISR
+- **ISR** — TIMER0_COMPA interrupt increments a millisecond counter
+- **GPIO** — button input with debounce, LED output
+- **UART** — prints reaction time result at 9600 baud
 
-## Concepts demonstrated
-- Hardware timer with ISR (Timer0 CTC mode)
-- State machine (WAITING, ARMED, REACTING)
-- UART transmit and receive
-- Volatile shared variables between ISR and main
-- Hardware randomness via TCNT0 capture
+## Wiring
+| Component | Arduino Pin |
+|-----------|-------------|
+| Button    | PD2 (Pin 2) |
+| LED       | PB5 (Pin 13)|
 
-## Setup
-- Arduino Uno (ATmega328P)
-- LED on Pin 13
-- Button on Pin 2
-- avr-gcc + avrdude on macOS
-
-## Flash
-make flash
-
-## Monitor
-screen /dev/tty.usbserial-1420 9600
+## Built With
+- avr-gcc (bare metal — no Arduino framework)
+- ATmega328P datasheet
+- Direct register manipulation only

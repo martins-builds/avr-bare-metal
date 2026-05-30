@@ -1,0 +1,10 @@
+.DS_Store
+*.DS_Store
+.Trash
+*.o
+*.elf
+*.hex
+*.map
+.pio/
+.vscode/
+tempCodeRunnerFile.c

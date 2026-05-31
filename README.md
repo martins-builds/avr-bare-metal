@@ -19,10 +19,10 @@ No Arduino libraries. No abstractions. Direct register manipulation only.
 | [reaction-lcd](./reaction-lcd/) | Reaction timer on LCD | Timer, TWI |
 | [dht11-button-control-lcd](./dth11-button-control-lcd/) | Button-triggered DHT11 on LCD | GPIO, DHT11, TWI |
 | [capstone](./capstone/) | Multi-sensor monitor | GPIO, Timer, ADC, DHT11, TWI, UART |
+| [pwm-servo](./servo/) | Servo motor control via hardware PWM | Timer1, PWM, OCR1A |
 
 ## Built With
-- avr-gcc — bare metal, no Arduino framework
-- PlatformIO
+- avr-gcc + avrdude — bare metal, no Arduino framework
 - ATmega328P datasheet as primary reference
 
 ## Focus

@@ -2,6 +2,7 @@
 #include "adc.h"
 #include "dht11.h"
 #include "lcd.h"
+#include <avr/interrupt.h>
 
 volatile uint16_t counter = 0;
 volatile uint16_t speed_threshold = 50;

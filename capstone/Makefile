@@ -7,8 +7,9 @@ CC = avr-gcc
 CFLAGS = -mmcu=$(MCU) -DF_CPU=$(F_CPU) -Os -Wall
 
 SRCS = src/main.c src/uart.c src/lcd.c src/dht11.c src/adc.c
-main: 
-	$(CC) $(CFLAGS) -o main.elf src/main.c
+
+main:
+	$(CC) $(CFLAGS) -o main.elf $(SRCS)
 	avr-objcopy -O ihex main.elf main.hex
 
 flash: main

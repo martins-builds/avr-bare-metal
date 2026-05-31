@@ -6,6 +6,7 @@
 
 volatile uint16_t counter = 0;
 volatile uint16_t speed_threshold = 50;
+volatile uint8_t led_active = 0;
 
 void timer_init(void){
     OCR0A = 155;
@@ -15,6 +16,8 @@ void timer_init(void){
 }
 ISR(TIMER0_COMPA_vect){
     counter++;
+    if(!led_active)
+        return;
     if (counter >= speed_threshold){
         PORTB ^= (1 << PB5);
         counter = 0;
@@ -52,6 +55,7 @@ int main(void){
             _delay_ms(20);
             if (!(PIND & (1 << PD2)))
             {
+                led_active = 1;
                 while (!(PIND & (1 << PD2)));
                 _delay_ms(50);
                lcd_send_cmd(0x01);   // clear LCD first
@@ -121,7 +125,8 @@ int main(void){
                 _delay_ms(50);
                 lcd_send_cmd(0x01);          // clear ONCE after button pressed
                 _delay_ms(2);
-                PORTB &= ~(1 << PB5);       // LED off
+                led_active = 0;
+                PORTB &= ~(1 << PB5);  // force LED off
                 idle_printed = 0;           // ✓ reset so idle message reprints
             }
         }

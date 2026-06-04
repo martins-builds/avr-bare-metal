@@ -36,9 +36,12 @@ uint8_t rc522_read(uint8_t reg){
 }
 
 void rc522_init(void) {
+    DDRB |= (1 << PB1);   // RST pin as output
+    PORTB |= (1 << PB1);  // RST HIGH
+    _delay_ms(50);         // let it wake up
     spi_init();
     rc522_write(RC522_CMD_REG, 0x0F);
-    while(rc522_read(RC522_CMD_REG) & (1 << 4));   // wait for PowerDown bit to clear
+    while(rc522_read(RC522_CMD_REG) & (1 << 4));
 }
 void rc522_request(void){
     rc522_write(RC522_COM_IRQ, 0x00);

@@ -102,8 +102,15 @@ int main(void){
 
     while (1)
     {
-        
+        rc522_request();
+        rc522_get_uid(uid);
+        for (int i = 0; i < 4; i++)
+        {
+            uart_print_number(uid[i]);
+            uart_send(' ')
+        }
+        uart_print("\r\n");
+        _delay_ms(500);        
     }
-    
     return 0;
 }

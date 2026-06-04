@@ -11,7 +11,7 @@
 void spi_init(void){
     PRR &= ~(1 << PRSPI);
     DDRB |= (1 << PB2);
-    DDR_SPI = (1 << DD_MOSI) | (1 << DD_SCK);
+    DDRB |= (1 << PB3) | (1 << PB5);
     SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
 }
 
@@ -30,7 +30,7 @@ void rc522_write(uint8_t reg, uint8_t data){
 uint8_t rc522_read(uint8_t reg){
     PORTB &= ~(1 << PB2);
     spi_transfer(((reg << 1) & 0x7E) | 0x80);         // send address byte
-    spi_transfer(0x00); 
+    uint8_t data = spi_transfer(0x00); 
     PORTB |= (1 << PB2);
     return data;
 }
@@ -61,7 +61,49 @@ void rc522_get_uid(uint8_t *uid){
     }
 }
 
-int main(void){
+void uart_init(void){
+    UBRR0H = (103 >> 8); 
+    UBRR0L = (103);
+    UCSR0B = (1 << TXEN0) | (1 << RXEN0);
+    UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+}
+void uart_send(unsigned char data){
+    while(!(UCSR0A & (1 << UDRE0)));
+    UDR0 = data;
+}
+void uart_print(const char *str) {
+    while (*str) {
+        uart_send(*str++);
+    }
+}
+void uart_print_number(uint16_t num){
+    char buf[6];
+    uint8_t i = 0;
+    
+    if (num == 0){
+        uart_send('0');
+        return;
+    }
+    while (num > 0){
+        buf[i++] = '0' + (num % 10);
+        num /= 10;
+    }
+    // digits are reversed, print backwards
+    while (i > 0){
+        uart_send(buf[--i]);
+    }
+}
 
+int main(void){
+    uart_init();
+    rc522_init();
+    uint8_t uid[5];
+    _delay_ms(2000);
+
+    while (1)
+    {
+        
+    }
+    
     return 0;
 }

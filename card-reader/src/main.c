@@ -93,6 +93,11 @@ void uart_print_number(uint16_t num){
         uart_send(buf[--i]);
     }
 }
+void uart_print_hex(uint8_t val) {
+    const char hex[] = "0123456789ABCDEF";
+    uart_send(hex[val >> 4]);    // high nibble
+    uart_send(hex[val & 0x0F]);  // low nibble
+}
 
 int main(void){
     uart_init();

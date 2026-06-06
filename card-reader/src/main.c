@@ -12,7 +12,7 @@ void spi_init(void){
     PRR &= ~(1 << PRSPI);
     DDRB |= (1 << PB2);
     DDRB |= (1 << PB3) | (1 << PB5);
-    SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);
+    SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR0);  // F_CPU/16
 }
 
 uint8_t spi_transfer(uint8_t data){
@@ -43,7 +43,7 @@ void rc522_init(void) {
     rc522_write(RC522_CMD_REG, 0x0F);
     while(rc522_read(RC522_CMD_REG) & (1 << 4));
 }
-void rc522_request(void){
+uint8_t rc522_request(void){
     rc522_write(RC522_COM_IRQ, 0x00);
     rc522_write(RC522_FIFO_LEVEL, 0x80);
     rc522_write(RC522_BIT_FRAMING, 0x07);
@@ -53,8 +53,9 @@ void rc522_request(void){
 
     uint16_t timeout = 2000;
     while(!(rc522_read(RC522_COM_IRQ) & ((1 << 5) | (1 << 4)))) {
-        if(--timeout == 0) return;  // no card found
+        if(--timeout == 0) return 0;  // no card found
     }
+    return 1;  // card found
 }
 void rc522_get_uid(uint8_t *uid){
     uint8_t num = rc522_read(RC522_FIFO_LEVEL);
@@ -108,16 +109,21 @@ int main(void){
     uint8_t uid[5];
     _delay_ms(2000);
 
-    while (1)
-    {
-        rc522_request();
+    uint8_t version = rc522_read(0x37);  // VersionReg
+    uart_print("Version: ");
+    uart_print_hex(version);
+    uart_print("\r\n");
+
+    while (1) {
+    if (rc522_request()) {
         rc522_get_uid(uid);
         for (int i = 0; i < 4; i++) {
             uart_print_hex(uid[i]);
             uart_send(' ');
         }
         uart_print("\r\n");
-        _delay_ms(500);        
     }
+    _delay_ms(500);
+}
     return 0;
 }
